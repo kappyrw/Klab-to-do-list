@@ -1,40 +1,62 @@
-const taskInput = document.getElementById('taskInput');
-const addBtn = document.getElementById('addBtn');
-const taskList = document.getElementById('taskList');
+const taskInput = document.getElementById("taskInput");
+const addBtn = document.getElementById("addBtn");
+const clearAllBtn = document.getElementById("clearAllBtn");
+const displayAllBtn = document.getElementById("displayAllBtn");
+const taskList = document.getElementById("taskList");
 
-addBtn.addEventListener('click', addTask);
+addBtn.addEventListener("click", addTask);
+clearAllBtn.addEventListener("click", clearAllTasks);
+displayAllBtn.addEventListener("click", displayAllTasks);
 
 function addTask() {
   const taskText = taskInput.value.trim();
-  if (taskText === '') return;
-
-  const taskItem = document.createElement('li');
-  taskItem.innerHTML = `
-    <span>${taskText}</span>
-    <div class="actions">
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    </div>
-  `;
-  taskList.appendChild(taskItem);
-
-  taskInput.value = '';
-
-  const editBtn = taskItem.querySelector('.edit-btn');
-  const deleteBtn = taskItem.querySelector('.delete-btn');
-
-  editBtn.addEventListener('click', () => editTask(taskItem));
-  deleteBtn.addEventListener('click', () => deleteTask(taskItem));
-}
-
-function editTask(taskItem) {
-  const span = taskItem.querySelector('span');
-  const newText = prompt('Edit task:', span.textContent);
-  if (newText !== null && newText.trim() !== '') {
-    span.textContent = newText;
+  if (taskText !== "") {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${taskText}</span>
+      <button class="editBtn">Edit</button>
+      <button class="deleteBtn">Delete</button>
+    `;
+    taskList.appendChild(li);
+    taskInput.value = "";
+    attachEditListener(li);
+    attachDeleteListener(li);
   }
 }
 
-function deleteTask(taskItem) {
-  taskList.removeChild(taskItem);
+function attachEditListener(li) {
+  const editBtn = li.querySelector(".editBtn");
+  const taskSpan = li.querySelector("span");
+  const originalText = taskSpan.textContent;
+
+  editBtn.addEventListener("click", () => {
+    const newText = prompt("Edit task:", originalText);
+    if (newText !== null) {
+      taskSpan.textContent = newText;
+    }
+  });
+}
+
+function attachDeleteListener(li) {
+  const deleteBtn = li.querySelector(".deleteBtn");
+  deleteBtn.addEventListener("click", () => {
+    li.remove();
+  });
+}
+
+function clearAllTasks() {
+  taskList.innerHTML = "";
+}
+
+function displayAllTasks() {
+  const tasks = taskList.querySelectorAll("span");
+  if (tasks.length > 0) {
+    let allTasks = "All Tasks:\n";
+    tasks.forEach((task, index) => {
+      allTasks += `${index + 1}. ${task.textContent}\n`;
+    });
+    alert(allTasks);
+  } else {
+    alert("No tasks to display.");
+  }
 }
